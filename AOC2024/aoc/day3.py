@@ -14,7 +14,7 @@ def sum_valid_multiplications_with_conditionals(file_path):
     for match in matches:
         x, y = map(int, match)
         total += x * y
-    print("PArt1: " + str(total))
+    print("Day 3 p1: " + str(total))
     mul_enabled = True
     total = 0
 
@@ -48,4 +48,4 @@ def sum_valid_multiplications_with_conditionals(file_path):
     return total
 
 result = sum_valid_multiplications_with_conditionals("resources/day3input.txt")
-print(":part2:", result)
+print("Day 3 p2:", result)

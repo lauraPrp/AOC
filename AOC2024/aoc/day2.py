@@ -37,7 +37,7 @@ for report in content:
     if len(safepos) == 3 or len(safeneg) == 3:
         ans += 1
 
-print(ans)
+print("Day2 p1:",ans)
 
 
    
