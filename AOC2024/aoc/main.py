@@ -4,7 +4,7 @@ import os
 
 def run_all_days():
     start_day = 1
-    end_day = 3
+    end_day = 4
 
     for day in range(start_day, end_day + 1):
         day_module = f"day{day}"
