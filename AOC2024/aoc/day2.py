@@ -28,8 +28,8 @@ with open("resources/day2input.txt") as f:
 ans = 0
 for report in content:
     values = list(map(int, report.split()))
-    safepos = set([1, 2, 3])
-    safeneg = set([-1, -2, -3])
+    safepos = {1, 2, 3}
+    safeneg = {-1, -2, -3}
     for i in range(1, len(values)):
         safepos.add(values[i] - values[i - 1])
         safeneg.add(values[i] - values[i - 1])
