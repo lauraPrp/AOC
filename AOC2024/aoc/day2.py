@@ -7,11 +7,10 @@ def is_safe(report):
 def is_safe_with_dampener(report):
     if is_safe(report):
         return True
-
     for i in range(len(report)):
-        if is_safe([report[j] for j in range(len(report)) if j != i]):
+        modified_report = report[:i] + report[i+1:]  # Remove the level at index i
+        if is_safe(modified_report):
             return True
-
     return False
 
 
