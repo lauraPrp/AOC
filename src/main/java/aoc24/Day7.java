@@ -1,91 +1,69 @@
 package aoc24;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Day7 {
-    public static long evaluateExpression(List<Long> numbers, List<String> operators) {
-        long result = numbers.get(0);
-        for (int i = 0; i < operators.size(); i++) {
-            if (operators.get(i).equals("+")) {
-                result += numbers.get(i + 1);
-            } else if (operators.get(i).equals("*")) {
-                result *= numbers.get(i + 1);
-            } else if (operators.get(i).equals("||")) {
-                result = Long.parseLong(result + "" + numbers.get(i + 1));
-            }
-        }
-        return result;
+    public static void main(String[] args) throws Exception {
+        Path inputPath = Paths.get("src/main/java/aoc24/day7input.txt");
+        List<String> linesAsStrings = Files.readAllLines(inputPath);
+
+        List<long[]> lines = linesAsStrings.stream()
+                .map(line -> parseLine(line))
+                .collect(Collectors.toList());
+
+        long part1 = lines.stream()
+                .filter(Day7::valid1)
+                .mapToLong(values -> values[0])
+                .sum();
+
+        long part2 = lines.stream()
+                .filter(Day7::valid2)
+                .mapToLong(values -> values[0])
+                .sum();
+
+        System.out.println("P1: " + part1);
+        System.out.println("P2: " + part2);
     }
 
-    public static List<List<String>> generateOperatorCombinations(int size) {
-        List<List<String>> combinations = new ArrayList<>();
-        generateOperatorCombinationsHelper(combinations, new ArrayList<>(), size);
-        return combinations;
+    private static long[] parseLine(String line) {
+        String[] parts = line.split(":");
+        long result = Long.parseLong(parts[0].trim());
+        String[] numbers = parts[1].trim().split("\\s+");
+        long[] values = new long[numbers.length + 1];
+        values[0] = result; // The expected result is the first element
+        for (int i = 0; i < numbers.length; i++) {
+            values[i + 1] = Long.parseLong(numbers[i]);
+        }
+        return values;
     }
 
-    private static void generateOperatorCombinationsHelper(List<List<String>> combinations, List<String> current, int size) {
-        if (current.size() == size) {
-            combinations.add(new ArrayList<>(current));
-            return;
-        }
-
-        current.add("+");
-        generateOperatorCombinationsHelper(combinations, current, size);
-        current.remove(current.size() - 1);
-
-        current.add("*");
-        generateOperatorCombinationsHelper(combinations, current, size);
-        current.remove(current.size() - 1);
-
-        current.add("||");
-        generateOperatorCombinationsHelper(combinations, current, size);
-        current.remove(current.size() - 1);
+    private static boolean valid1(long[] values) {
+        return valid(values, 2, values[1], false);
     }
 
-    public static boolean isEquationTrue(long testValue, List<Long> numbers) {
-        int n = numbers.size();
-        if (n == 1) return testValue == numbers.get(0);
-
-        List<List<String>> operatorCombinations = generateOperatorCombinations(n - 1);
-
-        for (List<String> operators : operatorCombinations) {
-            long result = evaluateExpression(numbers, operators);
-            if (result == testValue) {
-                return true;
-            }
-        }
-        return false;
+    private static boolean valid2(long[] values) {
+        return valid(values, 2, values[1], true);
     }
 
-    public static long processEquations(String filename) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
-        String line;
-        long totalCalibrationResult = 0;
-
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(": ");
-            long testValue = Long.parseLong(parts[0]);
-            List<Long> numbers = new ArrayList<>();
-            for (String num : parts[1].split(" ")) {
-                numbers.add(Long.parseLong(num));
-            }
-
-            if (isEquationTrue(testValue, numbers)) {
-                totalCalibrationResult += testValue;
-            }
+    private static boolean valid(long[] values, int i, long result, boolean part2) {
+        if (i >= values.length) {
+            return result == values[0];
         }
-        reader.close();
-        return totalCalibrationResult;
+        if (result > values[0]) {
+            return false;
+        }
+        return valid(values, i + 1, result + values[i], part2)
+                || valid(values, i + 1, result * values[i], part2)
+                || (part2 && valid(values, i + 1, concat(result, values[i]), part2));
     }
 
-    public static void main(String[] args) {
-        try {
-            String filename = "src/main/java/aoc24/day7input.txt";
-            long result = processEquations(filename);
-            System.out.println("Total calibration result: " + result);
-        } catch (IOException e) {
-            System.err.println("Error reading the file: " + e.getMessage());
-        }
+    private static long concat(long v1, long v2) {
+        return Long.parseLong(Long.toString(v1) + v2);
     }
 }
