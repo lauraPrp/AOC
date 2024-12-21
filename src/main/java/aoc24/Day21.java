@@ -1,5 +1,8 @@
 package aoc24;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class Day21 {
@@ -74,7 +77,19 @@ public class Day21 {
     }
 
     public static void main(String[] args) {
-        String[] codes = {"029A", "980A", "179A", "456A", "379A"};
+        String filePath = "src/main/java/aoc24/day21input.txt";
+        List<String> codes = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                codes.add(line.trim());  // Add each code to the list
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+            return;
+        }
+
         int totalComplexity = 0;
 
         for (String code : codes) {
@@ -92,11 +107,12 @@ public class Day21 {
             int complexity = commandLength * numericValue;
             totalComplexity += complexity;
 
-//            System.out.println("Command sequence for '" + code + "': " + totalCommands);
-//            System.out.println("Complexity for '" + code + "': " + complexity);
+
+            System.out.println("Command sequence for '" + code + "': " + totalCommands);
+            System.out.println("Complexity for '" + code + "': " + complexity);
         }
 
-        System.out.println("Test: " + totalComplexity);
+        System.out.println("P1: " + totalComplexity);
     }
 
 }
