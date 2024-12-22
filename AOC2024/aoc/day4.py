@@ -1,31 +1,41 @@
-def count_xmas(grid, word="XMAS"):
+def count_x_mas(grid):
     rows = len(grid)
     cols = len(grid[0])
-    word_len = len(word)
-    directions = [
-        (0, 1),  # Horizontal right
-        (0, -1),  # Horizontal left
-        (1, 0),  # Vertical down
-        (-1, 0),  # Vertical up
-        (1, 1),  # Diagonal down-right
-        (1, -1),  # Diagonal down-left
-        (-1, 1),  # Diagonal up-right
-        (-1, -1)  # Diagonal up-left
+
+    # X-MAS pattern is defined by the relative coordinates:
+    # Two "MAS" in the shape of an "X"
+    # Possible directions:
+    # M.S
+    # .A.
+    # M.S
+    x_mas_offsets = [
+        [(0, 0), (1, 1), (2, 0)],  # Left diagonal (M.A.S)
+        [(0, 2), (1, 1), (2, 2)]   # Right diagonal (M.A.S)
     ]
 
-    def is_valid(x, y, dx, dy):
-        for i in range(word_len):
-            nx, ny = x + i * dx, y + i * dy
-            if not (0 <= nx < rows and 0 <= ny < cols) or grid[nx][ny] != word[i]:
+    # Variations of "MAS" (can be reversed)
+    valid_mas = {"MAS", "SAM"}
+
+    def is_x_mas(x, y):
+        # Check both diagonals forming the X
+        for offsets in x_mas_offsets:
+            try:
+                diagonal = "".join(
+                    grid[x + dx][y + dy] for dx, dy in offsets
+                )
+                if diagonal not in valid_mas:
+                    return False
+            except IndexError:
                 return False
         return True
 
     count = 0
-    for x in range(rows):
-        for y in range(cols):
-            for dx, dy in directions:
-                if is_valid(x, y, dx, dy):
-                    count += 1
+    # Iterate through all grid positions
+    for x in range(rows - 2):  # Ensure there is space for the pattern
+        for y in range(cols - 2):  # Ensure space in both directions
+            if is_x_mas(x, y):
+                count += 1
+
     return count
 
 
@@ -35,8 +45,9 @@ def load_grid_from_file(filename):
     return grid
 
 
-# if __name__ == "__main__":
-input_file = "resources/day4input.txt"
-grid = load_grid_from_file(input_file)
-result = count_xmas(grid)
-print("Day4 p1:", result)
+# Example usage
+if __name__ == "__main__":
+    input_file = "resources/day4input.txt"  # Update with your input file path
+    grid = load_grid_from_file(input_file)
+    result = count_x_mas(grid)
+    print("Day4 p1:", result)
